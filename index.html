@@ -5,127 +5,267 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lunch Roulette Game - What to Eat Today?</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Fredoka', 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1a1c29 0%, #2b1055 100%);
+            font-family: 'Fredoka', 'Nunito', sans-serif;
+            background-color: #FFFDF6;
+            color: #4A3E3D;
             min-height: 100vh;
         }
-        .glow-text {
-            text-shadow: 0 0 20px rgba(236, 72, 153, 0.6), 0 0 40px rgba(168, 85, 247, 0.4);
+
+        /* Chiikawa Hand-drawn Border & Shape System */
+        .chiikawa-box {
+            background-color: #FFFFFF;
+            border: 3px solid #4A3E3D;
+            border-radius: 20px 25px 22px 24px;
+            box-shadow: 0px 6px 0px #4A3E3D;
         }
-        .card-glow {
-            box-shadow: 0 10px 30px -10px rgba(168, 85, 247, 0.3);
+
+        .chiikawa-badge {
+            border: 2.5px solid #4A3E3D;
+            border-radius: 18px 22px 20px 24px;
         }
-        @keyframes float {
+
+        .chiikawa-chip {
+            border: 2.5px solid #4A3E3D;
+            border-radius: 18px 22px 19px 21px;
+            box-shadow: 0px 3px 0px #4A3E3D;
+        }
+
+        /* Trembling & Micro-interaction Animations */
+        @keyframes tremble {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-1px, 1px) rotate(-1deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            60% { transform: translate(-1px, -1px) rotate(-0.5deg); }
+            80% { transform: translate(1px, 1px) rotate(0.5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .hover-tremble:hover {
+            animation: tremble 0.25s infinite ease-in-out;
+        }
+
+        @keyframes float-soft {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-6px); }
         }
+
         .floating {
-            animation: float 3s ease-in-out infinite;
+            animation: float-soft 3s ease-in-out infinite;
+        }
+
+        .chiikawa-btn {
+            border: 3px solid #4A3E3D;
+            border-radius: 22px 26px 20px 25px;
+            box-shadow: 0px 5px 0px #4A3E3D;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .chiikawa-btn:active:not(:disabled) {
+            transform: translateY(4px) scale(0.97);
+            box-shadow: 0px 1px 0px #4A3E3D;
         }
     </style>
 </head>
-<body class="text-white flex flex-col items-center justify-between p-4 sm:p-8 min-h-screen">
+<body class="flex flex-col items-center justify-between p-4 sm:p-8 min-h-screen">
 
-    <header class="text-center mt-4 mb-6">
-        <div class="inline-block bg-pink-500/20 border border-pink-500/40 text-pink-300 px-4 py-1.5 rounded-full text-sm font-semibold mb-3 tracking-wider uppercase backdrop-blur-md">
-            🎮 Ultimate Lunch Picker
+    <!-- Top Sound Bar Controls -->
+    <div class="w-full max-w-xl flex justify-end mb-2">
+        <button id="bgm-toggle-btn" onclick="toggleBGM()" class="bg-[#E1F1FF] hover:bg-[#cbe3fb] text-[#4A3E3D] font-extrabold px-4 py-2 chiikawa-badge hover-tremble text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer">
+            <span id="bgm-icon">🎵</span>
+            <span id="bgm-text">BGM: OFF</span>
+        </button>
+    </div>
+
+    <!-- Header Section -->
+    <header class="text-center mt-2 mb-6 max-w-lg">
+        <div class="inline-block bg-[#FFEBEF] chiikawa-badge text-[#4A3E3D] px-5 py-2 text-sm font-bold mb-4 tracking-wider uppercase">
+            ₍ᐢ.ˬ.ᐢ₎ Ultimate Lunch Picker
         </div>
-        <h1 class="text-4xl sm:text-6xl font-bold tracking-tight glow-text mb-2">
-            What's For Lunch?
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-[#4A3E3D] mb-3">
+            What's For Lunch? 🍲
         </h1>
-        <p class="text-gray-300 text-sm sm:text-base max-w-md mx-auto">
+        <p class="text-[#4A3E3D]/80 text-sm sm:text-base px-4 font-semibold">
             Spin the wheel, let destiny decide your meal today! No more endless discussions.
         </p>
     </header>
 
-    <main class="w-full max-w-xl bg-slate-900/80 backdrop-blur-xl border border-slate-700/60 rounded-3xl p-6 sm:p-8 card-glow flex flex-col items-center relative overflow-hidden mb-6">
-        
-        <!-- Decorative background glow blobs -->
-        <div class="absolute -top-24 -left-24 w-48 h-48 bg-purple-600/30 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-pink-600/30 rounded-full blur-3xl pointer-events-none"></div>
+    <!-- Main Container -->
+    <main class="w-full max-w-xl chiikawa-box p-6 sm:p-10 flex flex-col items-center relative mb-6">
 
         <!-- Today's Date Banner -->
-        <div id="date-banner" class="bg-slate-800/90 border border-slate-700 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium text-purple-300 mb-6 flex items-center gap-2 shadow-inner">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <div id="date-banner" class="bg-[#FFF9DB] chiikawa-badge px-4 py-2 text-xs sm:text-sm font-bold text-[#4A3E3D] mb-6 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-pink-400 animate-pulse"></span>
             <span id="current-date-text">Loading date...</span>
         </div>
 
-        <!-- Roulette Wheel / Slots Display Container -->
+        <!-- Roulette Wheel / Display Box -->
         <div class="w-full relative mb-8">
             <!-- Pointer Indicator -->
-            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20 text-pink-500 text-2xl filter drop-shadow-[0_2px_8px_rgba(236,72,153,0.8)]">
+            <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 z-20 text-[#4A3E3D] text-2xl">
                 ▼
             </div>
 
-            <!-- Restaurant Display Box -->
-            <div id="slot-container" class="w-full h-36 sm:h-44 bg-gradient-to-b from-slate-800 to-slate-950 border-2 border-purple-500/50 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-2xl transition-all duration-300">
-                
-                <!-- Background pattern -->
-                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#a855f7_1px,transparent_1px)] [background-size:16px_16px]"></div>
-
-                <div id="restaurant-icon" class="text-4xl sm:text-5xl mb-2 floating">🍱</div>
-                <div id="restaurant-name" class="text-2xl sm:text-4xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-pink-200 to-purple-300 text-center px-4">
+            <!-- Restaurant Display Container -->
+            <div id="slot-container" class="w-full h-40 sm:h-48 bg-[#E1F1FF] chiikawa-box flex flex-col items-center justify-center relative overflow-hidden transition-all duration-300">
+                <div id="restaurant-icon" class="text-5xl sm:text-6xl mb-2 floating">🍱</div>
+                <div id="restaurant-name" class="text-2xl sm:text-4xl font-extrabold text-[#4A3E3D] text-center px-4">
                     Ready to Spin!
                 </div>
-                <div id="restaurant-tag" class="text-xs sm:text-sm text-purple-400 mt-1 font-medium bg-purple-950/60 px-3 py-1 rounded-full border border-purple-800/50">
-                    Click Spin Button Below
+                <div id="restaurant-tag" class="text-xs sm:text-sm text-[#4A3E3D] mt-2 font-bold bg-[#FFEBEF] chiikawa-badge px-3.5 py-1">
+                    Click Spin Button Below ✨
                 </div>
             </div>
         </div>
 
-        <!-- Restaurant Options Reference Grid -->
+        <!-- Restaurant Pool Reference Grid -->
         <div class="w-full mb-8">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 text-center">Today's Restaurant Pool (5 Choices)</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="restaurant-chips">
-                <!-- Chips will be injected via JS -->
+            <h3 id="pool-count-heading" class="text-xs font-bold uppercase tracking-wider text-[#4A3E3D]/70 mb-3 text-center">Today's Restaurant Pool</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="restaurant-chips">
+                <!-- Injected via JS -->
             </div>
         </div>
 
         <!-- Action Controls -->
         <div class="w-full flex flex-col sm:flex-row gap-3">
-            <button id="spin-btn" onclick="startSpinning()" class="flex-1 bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-purple-600/40 transform active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 text-lg cursor-pointer">
+            <button id="spin-btn" onclick="handleButtonClick(startSpinning)" class="flex-1 bg-[#FFEBEF] hover:bg-[#ffd9e1] text-[#4A3E3D] font-extrabold py-4 px-6 chiikawa-btn hover-tremble flex items-center justify-center gap-2 text-lg cursor-pointer">
                 <span>🎰 Spin for Lunch!</span>
             </button>
-            <button onclick="shareResult()" class="sm:w-auto bg-slate-800 hover:bg-slate-700 border border-slate-700 text-gray-200 font-semibold py-4 px-5 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer text-sm">
+            <button onclick="handleButtonClick(shareResult)" class="sm:w-auto bg-[#FFF9DB] hover:bg-[#fff3be] text-[#4A3E3D] font-extrabold py-4 px-6 chiikawa-btn hover-tremble flex items-center justify-center gap-2 text-sm cursor-pointer">
                 <span>📋 Share Result</span>
             </button>
         </div>
 
-        <!-- Status Message / Toast -->
-        <div id="toast" class="mt-4 text-xs text-center text-pink-400 opacity-0 transition-opacity duration-300 font-medium">
+        <!-- Status Toast Message -->
+        <div id="toast" class="mt-4 text-xs text-center text-[#4A3E3D] font-bold opacity-0 transition-opacity duration-300 bg-[#E1F1FF] chiikawa-badge px-3 py-1.5">
             Result copied to clipboard successfully! 🎉
         </div>
     </main>
 
-    <footer class="text-xs text-gray-500 text-center pb-2">
+    <!-- Footer -->
+    <footer class="text-xs text-[#4A3E3D]/70 text-center pb-2 font-bold">
         Made with ❤️ for food lovers. Open in any browser to play anytime!
     </footer>
 
     <script>
-        // Restaurant data source with icons and themes
         const restaurants = [
-            { id: 1, name: "魚米", icon: "🍜", tag: "Rice Noodles & Fish Soup", color: "from-blue-500/20 to-cyan-500/20" },
-            { id: 2, name: "金飯碗", icon: "🍛", tag: "Golden Rice Bowl Specials", color: "from-amber-500/20 to-yellow-500/20" },
-            { id: 3, name: "三一餃子", icon: "🥟", tag: "Handmade Dumplings", color: "from-rose-500/20 to-orange-500/20" },
-            { id: 4, name: "魚川居", icon: "🍲", tag: "Fish & Local Delicacies", color: "from-emerald-500/20 to-teal-500/20" },
-            { id: 5, name: "幸福胖", icon: "🍞", tag: "Happy Bakery & Comfort Buns", color: "from-purple-500/20 to-pink-500/20" }
+            { id: 1, name: "魚米", icon: "🍜", tag: "Rice Noodles & Fish Soup" },
+            { id: 2, name: "金飯碗", icon: "🍛", tag: "Golden Rice Bowl Specials" },
+            { id: 3, name: "三一餃子", icon: "🥟", tag: "Handmade Dumplings" },
+            { id: 4, name: "魚川居", icon: "🍲", tag: "Fish & Local Delicacies" },
+            { id: 5, name: "幸福胖", icon: "🍞", tag: "Happy Bakery & Comfort Buns" },
+            { id: 6, name: "三月初七", icon: "🥢", tag: "Special Local Cuisine" }
         ];
 
         let isSpinning = false;
         let selectedRestaurant = null;
 
-        // Initialize Web Audio API sound generator (no external audio files needed)
+        // Sound System via Web Audio API
         let audioCtx = null;
+        let isBGMPlaying = false;
+        let bgmTimer = null;
+
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
         }
 
-        function playBeep(freq, type = 'sine', duration = 0.1) {
+        // Short Cute "Squish / Pop" Squeak Sound
+        function playCuteClickSound() {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sine';
+                // Fast pitch bend upwards to create a cute "bounce / pop" sound
+                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime); // C6
+                osc.frequency.exponentialRampToValueAtTime(1567.98, audioCtx.currentTime + 0.08); // G6
+
+                gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } catch (e) {}
+        }
+
+        // General button click handler wrapper
+        function handleButtonClick(actionFn) {
+            playCuteClickSound();
+            if (actionFn) actionFn();
+        }
+
+        // Toy Keyboard / Music Box Looping Melody Generator
+        const bgmNotes = [
+            523.25, 659.25, 783.99, 659.25, // C5, E5, G5, E5
+            880.00, 783.99, 659.25, 523.25, // A5, G5, E5, C5
+            587.33, 659.25, 698.46, 659.25, // D5, E5, F5, E5
+            587.33, 523.25, 493.88, 523.25  // D5, C5, B4, C5
+        ];
+
+        let currentNoteIdx = 0;
+
+        function playBGMNote() {
+            if (!isBGMPlaying) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const freq = bgmNotes[currentNoteIdx];
+                currentNoteIdx = (currentNoteIdx + 1) % bgmNotes.length;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'triangle'; // Soft acoustic toy keyboard feel
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                // Very gentle volume envelope
+                gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0005, audioCtx.currentTime + 0.28);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.28);
+
+                bgmTimer = setTimeout(playBGMNote, 320); // Steady gentle tempo
+            } catch (e) {}
+        }
+
+        function toggleBGM() {
+            initAudio();
+            playCuteClickSound();
+            isBGMPlaying = !isBGMPlaying;
+
+            const btnText = document.getElementById('bgm-text');
+            const btnIcon = document.getElementById('bgm-icon');
+
+            if (isBGMPlaying) {
+                btnText.innerText = "BGM: ON";
+                btnIcon.innerText = "🎶";
+                playBGMNote();
+            } else {
+                btnText.innerText = "BGM: OFF";
+                btnIcon.innerText = "🎵";
+                if (bgmTimer) clearTimeout(bgmTimer);
+            }
+        }
+
+        function playBeep(freq, type = 'sine', duration = 0.08) {
             try {
                 initAudio();
                 if (!audioCtx) return;
@@ -133,52 +273,51 @@
                 const gain = audioCtx.createGain();
                 osc.type = type;
                 osc.frequency.value = freq;
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 osc.start();
                 osc.stop(audioCtx.currentTime + duration);
-            } catch (e) {
-                // Ignore audio restriction errors before interaction
-            }
+            } catch (e) {}
         }
 
         function playWinSound() {
             try {
                 initAudio();
                 if (!audioCtx) return;
-                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                const notes = [523.25, 659.25, 783.99, 1046.50];
                 notes.forEach((note, index) => {
                     setTimeout(() => {
-                        playBeep(note, 'triangle', 0.25);
-                    }, index * 120);
+                        playBeep(note, 'triangle', 0.22);
+                    }, index * 110);
                 });
             } catch (e) {}
         }
 
-        // Display current date
         function updateDateBanner() {
             const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
             const todayStr = new Date().toLocaleDateString(undefined, options);
             document.getElementById('current-date-text').innerText = `Today: ${todayStr}`;
         }
 
-        // Render restaurant chips grid
         function renderChips() {
+            const heading = document.getElementById('pool-count-heading');
+            if (heading) {
+                heading.innerText = `Today's Restaurant Pool (${restaurants.length} Choices)`;
+            }
             const container = document.getElementById('restaurant-chips');
             container.innerHTML = restaurants.map(r => `
-                <div id="chip-${r.id}" class="bg-slate-800/80 border border-slate-700/80 rounded-xl p-2.5 flex items-center gap-2.5 transition-all duration-300">
+                <div id="chip-${r.id}" class="bg-[#FFFDF6] chiikawa-chip p-2.5 flex items-center gap-2 transition-all duration-300 hover-tremble cursor-pointer" onclick="playCuteClickSound()">
                     <span class="text-xl">${r.icon}</span>
                     <div class="overflow-hidden">
-                        <div class="font-bold text-sm text-white truncate">${r.name}</div>
-                        <div class="text-[10px] text-gray-400 truncate">${r.tag}</div>
+                        <div class="font-extrabold text-xs text-[#4A3E3D] truncate">${r.name}</div>
+                        <div class="text-[9px] text-[#4A3E3D]/70 font-semibold truncate">${r.tag}</div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Spin animation logic
         function startSpinning() {
             if (isSpinning) return;
             isSpinning = true;
@@ -192,48 +331,43 @@
             const tagEl = document.getElementById('restaurant-tag');
             const containerEl = document.getElementById('slot-container');
 
-            // Reset chips highlighting
+            // Reset chip highlights
             restaurants.forEach(r => {
                 const chip = document.getElementById(`chip-${r.id}`);
-                chip.className = "bg-slate-800/80 border border-slate-700/80 rounded-xl p-2.5 flex items-center gap-2.5 transition-all duration-300";
+                chip.className = "bg-[#FFFDF6] chiikawa-chip p-2.5 flex items-center gap-2 transition-all duration-300 hover-tremble cursor-pointer";
             });
 
             let elapsed = 0;
-            let speed = 50; // initial speed in ms
-            const totalDuration = 2500; // 2.5 seconds total spin time
+            let speed = 50;
+            const totalDuration = 2500;
             let currentIndex = Math.floor(Math.random() * restaurants.length);
 
             function spinStep() {
                 currentIndex = (currentIndex + 1) % restaurants.length;
                 const current = restaurants[currentIndex];
 
-                // Update visual display
                 nameEl.innerText = current.name;
                 iconEl.innerText = current.icon;
                 tagEl.innerText = current.tag;
 
-                playBeep(400 + (currentIndex * 60), 'sine', 0.08);
+                playBeep(450 + (currentIndex * 50), 'sine', 0.08);
 
                 elapsed += speed;
-                speed += 15; // Slow down gradually
+                speed += 14;
 
                 if (elapsed < totalDuration) {
                     setTimeout(spinStep, speed);
                 } else {
-                    // Final winner selected
                     selectedRestaurant = current;
                     
-                    // Highlight selected chip
                     const winningChip = document.getElementById(`chip-${selectedRestaurant.id}`);
-                    winningChip.className = "bg-purple-900/60 border-2 border-purple-400 rounded-xl p-2.5 flex items-center gap-2.5 transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.4)]";
+                    winningChip.className = "bg-[#FFEBEF] chiikawa-chip p-2.5 flex items-center gap-2 transition-all duration-300 ring-2 ring-[#4A3E3D]";
 
-                    // Animate container success state
-                    containerEl.classList.add('scale-105', 'border-pink-500');
+                    containerEl.classList.add('scale-105');
                     setTimeout(() => containerEl.classList.remove('scale-105'), 300);
 
                     playWinSound();
 
-                    // Re-enable button
                     spinBtn.disabled = false;
                     spinBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                     spinBtn.innerHTML = `<span>🎲 Spin Again!</span>`;
@@ -244,10 +378,8 @@
             spinStep();
         }
 
-        // Share result functionality
         function shareResult() {
             if (!selectedRestaurant) {
-                // If not spun yet, pick one or ask user to spin first
                 startSpinning();
                 return;
             }
@@ -290,10 +422,14 @@
             }, 3000);
         }
 
-        // Initial setup on load
         window.onload = function() {
             updateDateBanner();
             renderChips();
+
+            // First user interaction audio unlock
+            window.addEventListener('click', () => {
+                initAudio();
+            }, { once: true });
         };
     </script>
 </body>
